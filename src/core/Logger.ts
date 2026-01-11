@@ -1,6 +1,6 @@
-import chalk from 'chalk';
 import * as fs from 'fs';
-import { paint } from '../styles/gradients';
+import { paint, palettes, ThemeName } from '../styles/palettes';
+import { KaiChroma } from '../styles/KaiChroma';
 import { KaiSpinner } from '../utils/spinner';
 import { KaiProgress } from '../utils/progress';
 import { KaiTable } from '../utils/table';
@@ -9,7 +9,6 @@ import { KaiSelection } from '../utils/selection';
 import { KaiJson } from '../utils/json';
 import { PrettyError } from '../utils/prettyError';
 import { stripAnsi } from '../utils/stripAnsi';
-import { ThemeName, palettes } from '../styles/palettes';
 import { config } from './Config';
 import { ScopedLogger } from './Scope';
 import { KaiTimer } from '../features/Timer';
@@ -20,6 +19,7 @@ import { KaiNotify } from '../features/Notify';
 import { KaiScreenshot } from '../features/Screenshot';
 import { KaiEncrypt } from '../features/Encrypt';
 import { KaiSound } from '../features/Sound';
+import { KaiUpdateNotifier } from '../features/UpdateNotifier';
 import { LogLevel, LOG_LEVEL_PRIORITY, Transport, KaiConfig } from '../types';
 import { FileTransport, FileTransportOptions } from '../transports/FileTransport';
 import { WebhookTransport, WebhookTransportOptions } from '../transports/WebhookTransport';
@@ -128,8 +128,8 @@ export class KaiLogger {
             return;
         }
         this.stopSpinner();
-        const colors = (paint.text as any)[level] as string[];
-        const time = this.timestampFormat !== 'none' ? chalk.gray(this.getTime()) + ' ' : '';
+        const colors = (paint.colors as any)[level] as string[]; 
+        const time = this.timestampFormat !== 'none' ? KaiChroma.hex('#666666', this.getTime()) + ' ' : '';
         const badge = paint.apply(` ${label.padEnd(7)} `, colors);
         const output = `${time}${badge} ${message}`;
         console.log(output, ...args);
@@ -144,7 +144,7 @@ export class KaiLogger {
         if (!this.shouldLog('error')) return;
         if (message instanceof Error) {
             this.stopSpinner();
-            PrettyError.handle(message, palettes[this.theme]);
+            PrettyError.handle(message, paint.colors);
             this.logToFile('error', message.toString());
             this.addToBuffer('error', message.toString());
         } else {
@@ -163,15 +163,15 @@ export class KaiLogger {
     public log(message: string): void {
         if (this.silent) return;
         this.stopSpinner();
-        const time = this.timestampFormat !== 'none' ? chalk.gray(this.getTime()) + ' ' : '';
+        const time = this.timestampFormat !== 'none' ? KaiChroma.hex('#666666', this.getTime()) + ' ' : '';
         console.log(`${time}${message}`);
         this.logToFile('log', message);
     }
     public custom(badge: string, color: string, message: string, ...args: any[]): void {
         if (this.silent) return;
         this.stopSpinner();
-        const time = this.timestampFormat !== 'none' ? chalk.gray(this.getTime()) + ' ' : '';
-        const styledBadge = chalk.bgHex(color).black(` ${badge.toUpperCase().padEnd(7)} `);
+        const time = this.timestampFormat !== 'none' ? KaiChroma.hex('#666666', this.getTime()) + ' ' : '';
+        const styledBadge = KaiChroma.bgHex(color, ` ${badge.toUpperCase().padEnd(7)} `);
         console.log(`${time}${styledBadge} ${message}`, ...args);
         this.logToFile(badge, message);
     }
@@ -179,28 +179,29 @@ export class KaiLogger {
         if (this.silent) return;
         this.stopSpinner();
         const width = Math.max(message.length, title.length) + 4;
-        const border = paint.apply('─'.repeat(width), paint.text.info);
-        const topLeft = paint.apply('╭', paint.text.info);
-        const topRight = paint.apply('╮', paint.text.info);
-        const bottomLeft = paint.apply('╰', paint.text.info);
-        const bottomRight = paint.apply('╯', paint.text.info);
-        const side = paint.apply('│', paint.text.info);
+        const border = paint.apply('─'.repeat(width), paint.colors.info);
+        const topLeft = paint.apply('╭', paint.colors.info);
+        const topRight = paint.apply('╮', paint.colors.info);
+        const bottomLeft = paint.apply('╰', paint.colors.info);
+        const bottomRight = paint.apply('╯', paint.colors.info);
+        const side = paint.apply('│', paint.colors.info);
         console.log(`${topLeft}${border}${topRight}`);
-        console.log(`${side} ${paint.apply(title.padEnd(width - 2), paint.text.success)} ${side}`);
-        console.log(`${side}${paint.apply('─'.repeat(width), paint.text.debug)}${side}`);
+        console.log(`${side} ${paint.apply(title.padEnd(width - 2), paint.colors.success)} ${side}`);
+        console.log(`${side}${paint.apply('─'.repeat(width), paint.colors.debug)}${side}`);
         console.log(`${side} ${message.padEnd(width - 2)} ${side}`);
         console.log(`${bottomLeft}${border}${bottomRight}`);
         this.logToFile('box', `${title}: ${message}`);
     }
     public await(message: string): void {
         if (this.silent) return;
-        this.spinner.start(message, paint.text.info[0]);
+        this.spinner.start(message, paint.colors.info[0]);
     }
     public stop(message?: string): void {
-        this.spinner.stop('✔', message, paint.text.success[1]);
+        this.spinner.stop('✔', message, paint.colors.success[1]);
         if (message) this.logToFile('stop', message);
     }
     private stopSpinner(): void {
+        this.spinner.stop();
     }
     public createProgress(total: number, width?: number): KaiProgress {
         return new KaiProgress(total, width, this.theme);
@@ -208,25 +209,25 @@ export class KaiLogger {
     public table(data: any[]): void {
         if (this.silent) return;
         this.stopSpinner();
-        KaiTable.print(data, palettes[this.theme]);
+        KaiTable.print(data, paint.colors);
         this.logToFile('table', JSON.stringify(data));
     }
     public json(data: any): void {
         if (this.silent) return;
         this.stopSpinner();
-        KaiJson.print(data, palettes[this.theme]);
+        KaiJson.print(data, paint.colors);
         this.logToFile('json', JSON.stringify(data));
     }
     public tree(data: any): void {
         if (this.silent) return;
         this.stopSpinner();
-        KaiTree.print(data, palettes[this.theme]);
+        KaiTree.print(data, paint.colors);
         this.logToFile('tree', JSON.stringify(data));
     }
     public diff(before: any, after: any): void {
         if (this.silent) return;
         this.stopSpinner();
-        KaiDiff.print(before, after, palettes[this.theme]);
+        KaiDiff.print(before, after, paint.colors);
         this.logToFile('diff', JSON.stringify({ before, after }));
     }
     public time(label: string): void {
@@ -234,46 +235,46 @@ export class KaiLogger {
     }
     public timeEnd(label: string): number | null {
         if (this.silent) return null;
-        return this.timer.timeEnd(label, palettes[this.theme]);
+        return this.timer.timeEnd(label, paint.colors);
     }
     public async ask(question: string): Promise<string> {
         this.stopSpinner();
-        const answer = await KaiPrompt.ask(question, palettes[this.theme]);
+        const answer = await KaiPrompt.ask(question, paint.colors);
         this.logToFile('ask', `${question} -> ${answer}`);
         return answer;
     }
     public async confirm(question: string): Promise<boolean> {
         this.stopSpinner();
-        const answer = await KaiPrompt.confirm(question, palettes[this.theme]);
+        const answer = await KaiPrompt.confirm(question, paint.colors);
         this.logToFile('confirm', `${question} -> ${answer}`);
         return answer;
     }
     public async select(question: string, options: string[]): Promise<string> {
         this.stopSpinner();
-        const answer = await KaiSelection.select(question, options, palettes[this.theme]);
+        const answer = await KaiSelection.select(question, options, paint.colors);
         this.logToFile('select', `${question} -> ${answer}`);
         return answer;
     }
     public async multiselect(question: string, options: string[]): Promise<string[]> {
         this.stopSpinner();
-        const answer = await KaiSelection.multiselect(question, options, palettes[this.theme]);
+        const answer = await KaiSelection.multiselect(question, options, paint.colors);
         this.logToFile('multiselect', `${question} -> ${answer.join(', ')}`);
         return answer;
     }
     public chart(data: { label: string; value: number }[], options?: { width?: number; showValues?: boolean }): void {
         if (this.silent) return;
         this.stopSpinner();
-        KaiChart.bar(data, palettes[this.theme], options);
+        KaiChart.bar(data, paint.colors, options);
     }
     public sparkline(values: number[]): void {
         if (this.silent) return;
         this.stopSpinner();
-        KaiChart.sparkline(values, palettes[this.theme]);
+        KaiChart.sparkline(values, paint.colors);
     }
     public gauge(value: number, max: number, label?: string): void {
         if (this.silent) return;
         this.stopSpinner();
-        KaiChart.gauge(value, max, palettes[this.theme], label);
+        KaiChart.gauge(value, max, paint.colors, label);
     }
     public notify(message: string, title?: string): void {
         KaiNotify.send({ message, title });
@@ -334,6 +335,9 @@ export class KaiLogger {
     }
     public async playSound(filename: string): Promise<void> {
         await KaiSound.play(filename);
+    }
+    public static checkUpdate(pkg: any): void {
+        KaiUpdateNotifier.check(pkg);
     }
 }
 

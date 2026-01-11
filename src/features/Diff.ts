@@ -1,5 +1,5 @@
-import chalk from 'chalk';
-import { paint } from '../styles/gradients';
+
+import { paint } from '../styles/palettes';
 
 export class KaiDiff {
     static print(before: any, after: any, theme: any, path: string = ''): void {

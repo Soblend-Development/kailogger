@@ -1,6 +1,6 @@
-import chalk from 'chalk';
+
 import { LogLevel, Transport } from '../types';
-import { paint } from '../styles/gradients';
+import { paint } from '../styles/palettes';
 import { palettes, ThemeName } from '../styles/palettes';
 
 export class ConsoleTransport implements Transport {

@@ -1,5 +1,6 @@
-import chalk from 'chalk';
-import { paint } from '../styles/gradients';
+
+import { KaiChroma } from '../styles/KaiChroma';
+import { paint } from '../styles/palettes';
 
 interface TreeNode {
     [key: string]: TreeNode | null;
@@ -11,11 +12,11 @@ export class KaiTree {
             const isLastItem = index === keys.length - 1;
             const connector = isLastItem ? '└── ' : '├── ';
             const value = obj[key];
-            const line = prefix + connector + key;
+            const line = prefix + connector; // connector + key part
             if (value === null) {
-                console.log(chalk.gray(prefix + connector) + paint.apply(key, theme.info));
+                console.log(KaiChroma.hex(theme.dim, prefix + connector) + paint.apply(key, theme.info));
             } else {
-                console.log(chalk.gray(prefix + connector) + paint.apply(key + '/', theme.success));
+                console.log(KaiChroma.hex(theme.dim, prefix + connector) + paint.apply(key + '/', theme.success));
                 const newPrefix = prefix + (isLastItem ? '    ' : '│   ');
                 KaiTree.print(value, theme, newPrefix, isLastItem);
             }

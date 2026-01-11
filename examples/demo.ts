@@ -3,24 +3,15 @@ import * as path from 'path';
 
 async function runDemo() {
     console.clear();
-    
-    // Set sounds directory
     kai.setSoundsDir(path.join(__dirname, '../src/sounds'));
-    
-    // ===== HEADER =====
-    kai.box('KaiLogger v2.1.0', 'Now with Charts, Notifications, Screenshots & More!');
-    
-    // ===== BASIC LOGGING =====
+    kai.box('KaiLogger v1.0.1', 'Now with Charts, Notifications, Screenshots & More!');
     console.log('\n');
     kai.info('📋 Basic Logging');
     kai.success('Operation completed');
     kai.warning('Low memory');
     kai.error('Connection failed');
-    
-    // ===== CHARTS =====
     console.log('\n');
     kai.info('📊 Charts Demo');
-    
     kai.chart([
         { label: 'Users', value: 1500 },
         { label: 'Sales', value: 890 },

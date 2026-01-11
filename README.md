@@ -1,29 +1,29 @@
 # KaiLogger
 
-> **The Ultimate Logger for Node.js** — Beautiful, powerful, and designed for developers who care about aesthetics.
+> The Ultimate Logger for Node.js — Beautiful, powerful, and designed for developers who care about aesthetics.
 
 <p align="center">
   <img src="https://files.catbox.moe/et33ah.png" alt="KaiLogger Logo" width="600" />
 </p>
 
-![Version](https://img.shields.io/badge/version-1.0.1-blue)
+![Version](https://img.shields.io/badge/version-1.0.4-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-Ready-3178C6)
 
-Turn your boring console logs into a cyber-aesthetic experience. KaiLogger isn't just a logger; it's a complete CLI toolkit.
+Turn your boring console logs into a cyber-aesthetic experience. KaiLogger is a complete CLI toolkit featuring a custom high-performance color engine (KaiChroma) with TrueColor support, gradients, and 14 built-in themes.
 
 ---
 
 ## Features
 
-| Category        | Features                                                    |
-| --------------- | ----------------------------------------------------------- |
-| **Logging**     | Log levels, scoped loggers, custom badges, silent mode      |
-| **Styling**     | 6 built-in themes, gradients, pretty boxes                  |
-| **Interactive** | Spinners, progress bars, select menus, prompts              |
-| **Debug**       | Pretty errors, JSON highlighting, diff view, tree view      |
-| **Visuals**     | **Charts** (Bar, Sparkline, Gauge), **Screenshots**         |
-| **System**      | **Desktop Notifications**, **Encryption**, **Sound Alerts** |
-| **Transports**  | Console, File (with rotation), Webhooks                     |
+| Category        | Features                                                       |
+| --------------- | -------------------------------------------------------------- |
+| **Logging**     | Log levels, scoped loggers, custom badges, silent mode         |
+| **Styling**     | **14 Themes**, custom gradients, KaiChroma engine (TrueColor)  |
+| **Interactive** | Spinners, progress bars, select menus, prompts                 |
+| **Debug**       | Pretty errors, JSON highlighting, diff view, tree view         |
+| **Visuals**     | **Charts** (Bar, Sparkline, Gauge), **Screenshots** (TXT/HTML) |
+| **System**      | **Desktop Notifications**, **Encryption**, **Sound Alerts**    |
+| **Transports**  | Console, File (with rotation), Webhooks                        |
 
 ---
 
@@ -45,15 +45,45 @@ kai.error("Something went wrong");
 kai.warning("Careful there");
 kai.info("Just FYI");
 kai.debug("For your eyes only");
+
+// Enable sound
+kai.beep();
 ```
 
 ---
 
-## Charts (v1.1)
+## Themes
+
+Switch between 14 stunning themes powered by our custom KaiChroma engine.
+
+```typescript
+kai.setTheme("cyberpunk");
+```
+
+**Available Themes:**
+
+- `zen` (Minimalist)
+- `neon` (Bright cyber)
+- `pastel` (Soft colors)
+- `hacker` (Matrix style)
+- `sunset` (Warm gradients)
+- `ocean` (Blue/Green tones)
+- `cyberpunk` (Blue/Pink/Yellow)
+- `dracula` (Dark mode favorite)
+- `monokai` (Classic code style)
+- `vaporwave` (Aesthetic purple/cyan)
+- `midnight` (Deep blues)
+- `forest` (Nature tones)
+- `volcano` (Fiery reds/oranges)
+- `gold` (Luxury)
+
+---
+
+## Charts
 
 Visualize data directly in your terminal.
 
-### Bar Chart
+**Bar Chart**
 
 ```typescript
 kai.chart([
@@ -63,14 +93,14 @@ kai.chart([
 ]);
 ```
 
-### Sparkline
+**Sparkline**
 
 ```typescript
 kai.sparkline([10, 25, 40, 35, 60, 90, 45, 20]);
 // Output: ▂▃▄▃▅▇▄▂
 ```
 
-### Gauge
+**Gauge**
 
 ```typescript
 kai.gauge(75, 100, "CPU");
@@ -79,39 +109,37 @@ kai.gauge(75, 100, "CPU");
 
 ---
 
-## Notifications & Sounds (v1.1)
+## Notifications & Sounds
 
-### Desktop Notifications
-
+**Desktop Notifications**
 Send native system notifications.
 
 ```typescript
-kai.notify("Build complete!", "✅ Success");
+kai.notify("Build complete!", "Success");
 ```
 
-### Sound Alerts
-
-Play sounds for events. (Requires `src/sounds` folder or system sounds)
+**Sound Alerts**
+Play sounds for events (Success, Error, Warning, Notification).
 
 ```typescript
-// Configure sounds directory (optional)
+// Optional: Set custom sounds directory
 kai.setSoundsDir("./src/sounds");
 
 await kai.soundSuccess();
 await kai.soundError();
-kai.beep();
+kai.playSound("custom.wav");
 ```
 
 ---
 
-## Encryption (v1.1)
+## Encryption
 
 Handle sensitive data securely.
 
 ```typescript
 // Mask sensitive info in logs
 kai.masked("API Key", "sk-1234567890abcdef", 4);
-// 🔒 API Key: ************cdef
+// API Key: ************cdef
 
 // Encrypt/Decrypt helpers
 const secret = kai.encrypted("My Secret Data", "my-key");
@@ -120,7 +148,7 @@ kai.decrypted(secret, "my-key");
 
 ---
 
-## Screen Capture (v1.1)
+## Screen Capture
 
 Capture terminal output to file.
 
@@ -136,15 +164,6 @@ kai.saveScreenshotHtml("logs/session.html"); // Saves as styled HTML!
 
 ---
 
-## Themes
-
-```typescript
-kai.setTheme("neon");
-// Options: 'zen', 'neon', 'pastel', 'hacker', 'sunset', 'ocean'
-```
-
----
-
 ## Log Levels & Scopes
 
 ```typescript
@@ -154,17 +173,6 @@ kai.setLevel("warning");
 // Scoped Logger
 const db = kai.scope("Database");
 db.info("Connected"); // [Database] Connected
-```
-
----
-
-## Performance Timer
-
-```typescript
-kai.time("query");
-await db.query();
-kai.timeEnd("query");
-// ⏱ query: 145.32ms ⚡
 ```
 
 ---
@@ -188,6 +196,10 @@ kai.diff({ status: "idle" }, { status: "active" });
 ```typescript
 const name = await kai.ask("Name?");
 const framework = await kai.select("Framework", ["React", "Vue", "Svelte"]);
+
+// Progress Bar
+const bar = kai.createProgress(100);
+bar.update(50);
 ```
 
 ---

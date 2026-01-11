@@ -1,23 +1,31 @@
-import chalk from 'chalk';
+
+import { KaiChroma } from '../styles/KaiChroma';
 
 export class KaiJson {
     static print(obj: any, theme: any) {
         const jsonStr = JSON.stringify(obj, null, 2);
+        
+        // Manual colorization for full control using KaiChroma
         const colored = jsonStr
+            // Strings (keys)
             .replace(/"([^"]+)":/g, (match, key) => {
-                return chalk.hex(theme.info[0])(`"${key}"`) + ':';
+                return KaiChroma.hex(theme.info[0], `"${key}"`) + ':';
             })
+            // String values
             .replace(/: "([^"]*)"/g, (match, val) => {
-                return ': ' + chalk.hex(theme.success[1])(`"${val}"`);
+                return ': ' + KaiChroma.hex(theme.success[1], `"${val}"`);
             })
+            // Numbers
             .replace(/: (\d+\.?\d*)/g, (match, num) => {
-                return ': ' + chalk.hex(theme.warning[0])(num);
+                return ': ' + KaiChroma.hex(theme.warning[0], num);
             })
+            // Booleans
             .replace(/: (true|false)/g, (match, bool) => {
-                return ': ' + chalk.hex(theme.error[0])(bool);
+                return ': ' + KaiChroma.hex(theme.error[0], bool);
             })
+            // Null
             .replace(/: (null)/g, (match, n) => {
-                return ': ' + chalk.hex(theme.dim)(n);
+                return ': ' + KaiChroma.hex(theme.dim, n);
             });
 
         console.log(colored);

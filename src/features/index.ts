@@ -6,3 +6,4 @@ export * from './Notify';
 export * from './Screenshot';
 export * from './Encrypt';
 export * from './Sound';
+export * from './UpdateNotifier';

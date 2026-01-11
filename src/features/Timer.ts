@@ -1,5 +1,5 @@
-import chalk from 'chalk';
-import { paint } from '../styles/gradients';
+
+import { paint } from '../styles/palettes';
 
 export class KaiTimer {
     private timers: Map<string, number> = new Map();
@@ -9,7 +9,7 @@ export class KaiTimer {
     timeEnd(label: string, theme: any): number | null {
         const start = this.timers.get(label);
         if (!start) {
-            console.log(chalk.yellow(`⚠ Timer "${label}" does not exist`));
+            console.log(paint.apply(`⚠ Timer "${label}" does not exist`, theme.warning));
             return null;
         }
         const duration = performance.now() - start;

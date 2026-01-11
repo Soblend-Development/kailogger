@@ -2,7 +2,7 @@ export * from './core/Logger';
 export * from './core/Config';
 export * from './core/Scope';
 export * from './styles/palettes';
-export * from './styles/gradients';
+export * from './styles/KaiChroma';
 export * from './types';
 export * from './transports';
 export * from './features';
